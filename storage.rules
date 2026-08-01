@@ -1,0 +1,12 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      // Only authenticated users can read the PDF notes
+      allow read: if request.auth != null;
+      
+      // Prevent all client-side uploads/modifications (Admin/Console uploads bypass these rules)
+      allow write: if false;
+    }
+  }
+}
