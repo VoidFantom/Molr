@@ -39,8 +39,27 @@ const seedData = [
         name: "Laws of Motion",
         order: 1,
         tasks: [
-          { title: "Newton's First Law and Inertia", estMinutes: 15 },
-          { title: "Newton's Second Law and Momentum", estMinutes: 20 },
+          { 
+            title: "Newton's First Law and Inertia", 
+            estMinutes: 15,
+            quiz: [
+              {
+                question: "What is the primary unit of force in the SI system?",
+                options: ["Joule", "Newton", "Watt", "Pascal"],
+                correctAnswerIndex: 1
+              },
+              {
+                question: "Which law is also known as the Law of Inertia?",
+                options: ["First Law", "Second Law", "Third Law", "Law of Gravitation"],
+                correctAnswerIndex: 0
+              }
+            ]
+          },
+          { 
+            title: "Newton's Second Law and Momentum", 
+            estMinutes: 20,
+            answerKey: "Step 1: Identify the given values (m = 5kg, a = 9.8m/s²).\nStep 2: Use the formula F = ma.\nStep 3: F = 5 * 9.8 = 49 N.\n\nFinal Answer: 49 Newtons."
+          },
           { title: "Newton's Third Law and Applications", estMinutes: 20 },
           { title: "Friction: Static and Kinetic", estMinutes: 15 },
           { title: "Circular Motion Dynamics", estMinutes: 20 }
@@ -158,13 +177,17 @@ async function seed() {
         const noteId = `note_${taskId}`;
 
         // Create Task
-        const taskRef = db.collection(`chapters/${chap.id}/tasks`).doc(taskId);
-        batch.set(taskRef, {
+        const taskDataToSave = {
           order: taskNumber,
           title: taskData.title,
           estMinutes: taskData.estMinutes,
           noteId: noteId
-        }, { merge: true });
+        };
+        if (taskData.quiz) taskDataToSave.quiz = taskData.quiz;
+        if (taskData.answerKey) taskDataToSave.answerKey = taskData.answerKey;
+
+        const taskRef = db.collection(`chapters/${chap.id}/tasks`).doc(taskId);
+        batch.set(taskRef, taskDataToSave, { merge: true });
         taskCount++;
 
         // Create Note

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { BookOpen, CheckCircle, ExternalLink } from 'lucide-react';
+import { BookOpen, CheckCircle } from 'lucide-react';
 import { db } from '../firebase';
 import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { ensureDailySnapshot, toggleTaskCompletion } from '../services/db';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
+import TaskItem from './TaskItem';
 
 export default function BacklogCard({ backlog }) {
   const { currentUser } = useAuth();
@@ -32,8 +33,28 @@ export default function BacklogCard({ backlog }) {
         const notesSnap = await getDocs(notesQ);
         const notes = notesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
         
-        const tasksWithNotes = chapterTasks.map(t => {
+        const tasksWithNotes = chapterTasks.map((t, index) => {
           const note = notes.find(n => n.taskId === t.id);
+          
+          // INJECT DUMMY DATA FOR TESTING
+          if (index === 0 && !t.quiz) {
+            t.quiz = [
+              {
+                question: "What is the primary unit of force in the SI system?",
+                options: ["Joule", "Newton", "Watt", "Pascal"],
+                correctAnswerIndex: 1
+              },
+              {
+                question: "Which law is also known as the Law of Inertia?",
+                options: ["First Law", "Second Law", "Third Law", "Law of Gravitation"],
+                correctAnswerIndex: 0
+              }
+            ];
+          }
+          if (index === 1 && !t.answerKey) {
+            t.answerKey = "Step 1: Identify the given values (m = 5kg, a = 9.8m/s²).\nStep 2: Use the formula F = ma.\nStep 3: F = 5 * 9.8 = 49 N.\n\nFinal Answer: 49 Newtons.";
+          }
+          
           return { ...t, note };
         });
         
@@ -135,36 +156,14 @@ export default function BacklogCard({ backlog }) {
           </div>
         ) : (
           <div className="flex flex-col gap-2">
-            {todaysTasks.map(task => {
-              const isChecked = (backlog.completedTaskIds || []).includes(task.id);
-              return (
-                <div key={task.id} className={`checkbox-container p-3 rounded-lg ${isChecked ? 'checked' : ''}`}>
-                  <input 
-                    type="checkbox" 
-                    className="checkbox-input"
-                    checked={isChecked}
-                    onChange={(e) => handleToggle(task.id, e.target.checked)}
-                  />
-                  <div className="flex-1">
-                    <div className={`text-sm ${isChecked ? 'line-through text-muted' : 'font-medium'}`}>
-                      {task.title}
-                    </div>
-                    <div className="text-xs text-muted mt-1 font-medium">~{task.estMinutes} mins</div>
-                  </div>
-                  {task.note && (
-                    <a 
-                      href={task.note.downloadURL} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="btn btn-outline text-xs p-1 px-2 flex items-center gap-1 font-medium"
-                      style={{ padding: '0.375rem 0.625rem', borderRadius: '0.375rem' }}
-                    >
-                      Notes <ExternalLink size={12} />
-                    </a>
-                  )}
-                </div>
-              );
-            })}
+            {todaysTasks.map(task => (
+              <TaskItem 
+                key={task.id} 
+                task={task} 
+                isChecked={(backlog.completedTaskIds || []).includes(task.id)}
+                onToggle={handleToggle}
+              />
+            ))}
           </div>
         )}
       </div>
