@@ -9,6 +9,7 @@ import {
 } from 'firebase/auth';
 import { auth, db } from '../firebase';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import Loader from '../components/Loader';
 
 const AuthContext = createContext();
 
@@ -84,7 +85,13 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {loading ? (
+        <div className="app-container flex items-center justify-center h-screen">
+          <Loader />
+        </div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 }

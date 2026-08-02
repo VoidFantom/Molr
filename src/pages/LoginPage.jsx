@@ -37,13 +37,13 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="app-container page-enter flex flex-col items-center justify-center p-6">
-      <div className="w-full max-w-sm text-center mb-8 mt-auto pt-8">
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 page-enter" style={{ backgroundColor: 'var(--bg-color)', transition: 'background-color 0.3s ease' }}>
+      <div className="w-full max-w-[440px] text-center mb-8">
         <h1 className="text-4xl font-bold mb-3">Molr</h1>
         <p className="text-muted text-sm font-medium leading-relaxed px-4">Your daily planner to catch up on 11th grade PCM without the overwhelm.</p>
       </div>
 
-      <div className="card w-full max-w-sm shadow-xl">
+      <div className="card w-full max-w-[440px] shadow-xl m-0">
         <h2 className="text-xl font-bold mb-6 text-center">{isSignUp ? 'Create an Account' : 'Welcome Back'}</h2>
         
         {error && <div className="p-3 mb-4 text-sm text-red-600 bg-red-50 rounded-lg border border-red-100 font-medium">{error}</div>}
@@ -99,7 +99,7 @@ export default function LoginPage() {
         </button>
       </div>
 
-      <div className="mt-8 mb-auto text-center text-sm font-medium text-muted">
+      <div className="mt-8 text-center text-sm font-medium text-muted">
         {isSignUp ? "Already have an account? " : "Don't have an account? "}
         <button 
           type="button" 
