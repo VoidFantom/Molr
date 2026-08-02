@@ -32,8 +32,7 @@ export default function LogoutModal({ isOpen, onClose }) {
           </button>
           <button 
             onClick={handleConfirm} 
-            className="btn flex-1"
-            style={{ backgroundColor: '#DC2626', color: '#FFFFFF' }}
+            className="btn btn-danger solid flex-1"
           >
             Confirm Logout
           </button>

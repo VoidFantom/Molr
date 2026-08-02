@@ -11,6 +11,10 @@
   --success: #10B981;
   --success-light: #D1FAE5;
   --success-text: #047857;
+  --success-text: #047857;
+  --danger: #DC2626;
+  --danger-light: rgba(220, 38, 38, 0.1);
+  --danger-hover: rgba(220, 38, 38, 0.15);
   
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -30,6 +34,10 @@
   --success: #34D399;
   --success-light: #064E3B;
   --success-text: #6EE7B7;
+  --success-text: #6EE7B7;
+  --danger: #F87171;
+  --danger-light: rgba(248, 113, 113, 0.1);
+  --danger-hover: rgba(248, 113, 113, 0.15);
   
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
@@ -49,6 +57,10 @@
   --success: #34D399;
   --success-light: #064E3B;
   --success-text: #6EE7B7;
+  --success-text: #6EE7B7;
+  --danger: #F87171;
+  --danger-light: rgba(248, 113, 113, 0.1);
+  --danger-hover: rgba(248, 113, 113, 0.15);
   
   --shadow-sm: 0 1px 2px 0 rgba(255, 255, 255, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(255, 255, 255, 0.05);
@@ -68,6 +80,10 @@
   --success: #34D399;
   --success-light: #064E3B;
   --success-text: #6EE7B7;
+  --success-text: #6EE7B7;
+  --danger: #F87171;
+  --danger-light: rgba(248, 113, 113, 0.1);
+  --danger-hover: rgba(248, 113, 113, 0.15);
   
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
@@ -307,6 +323,31 @@ h1, h2, h3, h4, h5, h6, .display-font {
   color: var(--text-main);
   transform: scale(1.02) translateY(-1px);
 }
+.btn-danger {
+  background-color: transparent;
+  color: var(--text-muted);
+}
+.btn-danger:hover:not(:disabled) {
+  background-color: var(--danger-light);
+  color: var(--danger);
+  transform: scale(1.02) translateY(-1px);
+}
+.btn-danger.solid {
+  background-color: var(--danger);
+  color: #FFFFFF;
+}
+.dark .btn-danger.solid, .black .btn-danger.solid, .light-black .btn-danger.solid {
+  color: #000000;
+}
+.btn-danger.solid:hover:not(:disabled) {
+  background-color: var(--danger);
+  opacity: 0.9;
+  transform: translateY(-2px);
+  color: #FFFFFF;
+}
+.dark .btn-danger.solid:hover:not(:disabled), .black .btn-danger.solid:hover:not(:disabled), .light-black .btn-danger.solid:hover:not(:disabled) {
+  color: #000000;
+}
 
 .icon-btn {
   display: inline-flex;
@@ -451,19 +492,19 @@ h1, h2, h3, h4, h5, h6, .display-font {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(4px);
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
-  z-index: 50;
+  z-index: 9999;
   animation: fadeIn 0.2s ease-out;
 }
 .modal-content {
   background: var(--surface);
   width: 100%;
   max-width: 480px;
-  border-radius: 1.5rem 1.5rem 0 0;
+  border-radius: 1.5rem;
   padding: 1.5rem;
   animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   max-height: 90vh;

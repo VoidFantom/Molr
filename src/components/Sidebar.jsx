@@ -35,10 +35,7 @@ export default function Sidebar() {
         
         <button 
           onClick={() => setIsLogoutModalOpen(true)} 
-          className="flex items-center gap-3 w-auto md:w-full md:justify-start px-3 py-2 rounded-lg font-medium transition-colors hidden md:flex md:mt-auto"
-          style={{ color: 'var(--text-muted)' }}
-          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(220,38,38,0.1)'; e.currentTarget.style.color = '#DC2626' }}
-          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)' }}
+          className="btn btn-danger flex items-center gap-3 w-auto md:w-full md:justify-start px-3 py-2 rounded-lg font-medium transition-colors hidden md:flex md:mt-auto"
           title="Log Out"
         >
           <LogOut size={20} />

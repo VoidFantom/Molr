@@ -37,11 +37,11 @@ export default function SettingsPage() {
       <div className="app-layout">
         <Sidebar />
 
-        <main className="main-content flex-col gap-6 flex">
+        <main className="main-content flex-col gap-4 flex">
           <div className="max-w-xl w-full">
-            <h1 className="page-title mb-6 hidden md:block">Settings</h1>
+            <h1 className="page-title mb-4 hidden md:block">Settings</h1>
 
-            <section className="mb-8">
+            <section className="mb-4">
               <h2 className="section-header text-muted mb-3">Profile</h2>
               <div className="card p-4">
                 <form onSubmit={handleSaveProfile} className="flex flex-col gap-3">
@@ -65,7 +65,7 @@ export default function SettingsPage() {
               </div>
             </section>
 
-            <section className="mb-8">
+            <section className="mb-4">
               <h2 className="section-header text-muted mb-3">Appearance</h2>
               <div className="card p-4">
                 <div className="flex items-center justify-between">
@@ -77,7 +77,7 @@ export default function SettingsPage() {
               </div>
             </section>
 
-            <section className="mb-8">
+            <section className="mb-4">
               <h2 className="section-header text-muted mb-3">Account</h2>
               <div className="card p-4">
                 <label className="label">Email Address</label>
@@ -90,7 +90,7 @@ export default function SettingsPage() {
               </div>
             </section>
 
-            <section className="mb-8">
+            <section className="mb-4">
               <h2 className="section-header text-muted mb-3">About</h2>
               <div className="card p-5 text-center">
                 <h3 className="font-bold text-lg mb-1">Molr</h3>
@@ -98,15 +98,12 @@ export default function SettingsPage() {
               </div>
             </section>
 
-            <section className="mb-8">
-              <h2 className="section-header text-muted mb-3" style={{ color: '#DC2626' }}>Danger Zone</h2>
-              <div className="card p-2 border-red-200" style={{ borderColor: 'rgba(220, 38, 38, 0.2)' }}>
+            <section className="mb-4">
+              <h2 className="section-header text-muted mb-3" style={{ color: 'var(--danger)' }}>Danger Zone</h2>
+              <div className="card p-2" style={{ borderColor: 'var(--danger-light)' }}>
                 <button 
                   onClick={() => setIsLogoutModalOpen(true)} 
-                  className="flex items-center justify-between p-3 rounded-lg text-danger hover:bg-red-50 transition-colors text-left font-medium w-full"
-                  style={{ color: '#DC2626' }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(220,38,38,0.1)' }}
-                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
+                  className="btn btn-danger flex items-center justify-between p-3 rounded-lg transition-colors text-left font-medium w-full"
                 >
                   <div className="flex items-center gap-3">
                     <LogOut size={20} />

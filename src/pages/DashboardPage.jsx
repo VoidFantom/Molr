@@ -28,8 +28,16 @@ export default function DashboardPage() {
         <main className="main-content">
         <StreakBadge currentStreak={userData.currentStreak || 0} />
         
-        <div className="flex justify-between items-end mb-4 mt-8">
-          <h2 className="text-lg font-semibold">Active Catch-ups</h2>
+        <div className="flex justify-between items-center mb-4 mt-6">
+          <h2 className="section-header">Active Catch-ups</h2>
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="btn btn-primary px-4 py-2 flex items-center gap-2 rounded-xl"
+            style={{ fontSize: '14px' }}
+          >
+            <Plus size={18} />
+            <span>Add Backlog</span>
+          </button>
         </div>
 
         {activeBacklogs.length === 0 ? (
@@ -48,17 +56,6 @@ export default function DashboardPage() {
           </div>
         )}
       </main>
-      </div>
-
-      {/* Floating Action Button */}
-      <div className="fixed bottom-8 left-0 right-0 flex justify-center w-full z-40 pointer-events-none">
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="btn btn-primary px-6 py-3 shadow-lg flex items-center gap-2 pointer-events-auto rounded-full"
-        >
-          <Plus size={20} />
-          <span>Add Backlog</span>
-        </button>
       </div>
 
       <AddBacklogModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />

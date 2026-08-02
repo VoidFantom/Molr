@@ -99,12 +99,14 @@ export default function LoginPage() {
         </button>
       </div>
 
-      <div className="mt-8 text-center text-sm font-medium text-muted">
-        {isSignUp ? "Already have an account? " : "Don't have an account? "}
+      <div className="mt-8 flex flex-col items-center gap-3">
+        <span className="text-sm font-medium text-muted">
+          {isSignUp ? "Already have an account?" : "Don't have an account?"}
+        </span>
         <button 
           type="button" 
           onClick={() => setIsSignUp(!isSignUp)}
-          className="text-primary font-semibold hover:underline"
+          className="btn btn-ghost"
         >
           {isSignUp ? 'Log In' : 'Sign Up'}
         </button>
