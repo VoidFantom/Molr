@@ -17,7 +17,7 @@
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-.dark {
+:root.dark {
   /* Dark Theme Colors */
   --primary: #818CF8;
   --primary-hover: #A5B4FC;
@@ -36,7 +36,7 @@
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
 }
 
-.black {
+:root.black {
   /* True Black Theme Colors */
   --primary: #818CF8;
   --primary-hover: #A5B4FC;
@@ -55,7 +55,7 @@
   --shadow-lg: 0 10px 15px -3px rgba(255, 255, 255, 0.05);
 }
 
-.light-black {
+:root.light-black {
   /* Light Black Theme Colors */
   --primary: #818CF8;
   --primary-hover: #A5B4FC;
@@ -80,18 +80,51 @@
   padding: 0;
 }
 
+/* Typography Hierarchy */
 body {
   font-family: 'Inter', -apple-system, sans-serif;
   background-color: var(--bg-color);
   color: var(--text-main);
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.3s ease, color 0.3s ease;
+  /* Base body text */
+  font-size: 14px;
+  font-weight: 400;
 }
 
-/* Typography */
 h1, h2, h3, h4, h5, h6, .display-font {
   font-family: 'Plus Jakarta Sans', sans-serif;
   color: var(--text-main);
+}
+
+/* Page titles */
+.page-title {
+  font-size: 30px;
+  font-weight: 700;
+}
+
+/* Section headers */
+.section-header {
+  font-size: 21px;
+  font-weight: 600;
+}
+
+/* Card/Chapter titles */
+.card-title {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+/* Secondary/helper text */
+.text-secondary {
+  font-size: 13px;
+  font-weight: 400;
+}
+
+/* Labels/captions/timestamps */
+.text-caption {
+  font-size: 12px;
+  font-weight: 500;
 }
 
 /* Layout */
@@ -223,12 +256,12 @@ h1, h2, h3, h4, h5, h6, .display-font {
   justify-content: center;
   padding: 0.875rem 1.25rem;
   border-radius: 12px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   border: none;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  font-size: 0.9375rem;
+  font-size: 15px;
 }
 .btn-sm {
   padding: 0.5rem 0.75rem;

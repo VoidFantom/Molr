@@ -51,12 +51,15 @@ export default function DashboardPage() {
       </div>
 
       {/* Floating Action Button */}
-      <button 
-        onClick={() => setIsModalOpen(true)}
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all z-40 btn-primary"
-      >
-        <Plus size={28} />
-      </button>
+      <div className="fixed bottom-8 left-0 right-0 flex justify-center w-full z-40 pointer-events-none">
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="btn btn-primary px-6 py-3 shadow-lg flex items-center gap-2 pointer-events-auto rounded-full"
+        >
+          <Plus size={20} />
+          <span>Add Backlog</span>
+        </button>
+      </div>
 
       <AddBacklogModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>

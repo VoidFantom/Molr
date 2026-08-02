@@ -1,21 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Settings, LogOut } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import LogoutModal from './LogoutModal';
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout } = useAuth();
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate('/login');
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const navItems = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
@@ -43,14 +34,19 @@ export default function Sidebar() {
         })}
         
         <button 
-          onClick={handleLogout} 
-          className="icon-btn flex items-center gap-3 w-auto md:w-full md:justify-start px-3 py-2 text-danger hover:bg-red-50 hidden md:flex md:mt-auto"
+          onClick={() => setIsLogoutModalOpen(true)} 
+          className="flex items-center gap-3 w-auto md:w-full md:justify-start px-3 py-2 rounded-lg font-medium transition-colors hidden md:flex md:mt-auto"
+          style={{ color: 'var(--text-muted)' }}
+          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(220,38,38,0.1)'; e.currentTarget.style.color = '#DC2626' }}
+          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)' }}
           title="Log Out"
         >
           <LogOut size={20} />
-          <span className="hidden md:inline font-medium">Log Out</span>
+          <span className="hidden md:inline">Log Out</span>
         </button>
       </nav>
+      
+      <LogoutModal isOpen={isLogoutModalOpen} onClose={() => setIsLogoutModalOpen(false)} />
     </aside>
   );
 }
