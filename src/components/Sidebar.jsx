@@ -29,24 +29,35 @@ export default function Sidebar() {
 
   return (
     <>
-      <div className="mobile-header">
+      <div className="app-header">
         <button 
           className="icon-btn" 
-          onClick={() => setIsMobileOpen(!isMobileOpen)} 
-          title={isMobileOpen ? "Close sidebar" : "Open sidebar"}
+          onClick={() => setIsMobileOpen(true)} 
+          title="Open sidebar"
         >
-          {isMobileOpen ? <VerticalLines size={24} /> : <Menu size={24} />}
+          <Menu size={24} />
         </button>
         <h1>Molr</h1>
         <div style={{ width: '40px' }}></div> {/* Spacer for center alignment */}
       </div>
 
-      {isMobileOpen && (
-        <div className="sidebar-backdrop" onClick={() => setIsMobileOpen(false)} />
-      )}
+      <div 
+        className={`sidebar-backdrop ${isMobileOpen ? 'visible' : ''}`} 
+        onClick={() => setIsMobileOpen(false)} 
+      />
 
       <aside className={`sidebar ${isMobileOpen ? 'open' : ''}`}>
-        <h1 className="desktop-only-title font-bold text-primary">Molr</h1>
+        <div className="flex items-center justify-between w-full">
+          <button 
+            className="icon-btn" 
+            onClick={() => setIsMobileOpen(false)} 
+            title="Close sidebar"
+          >
+            <VerticalLines size={24} />
+          </button>
+          <h1 className="font-bold text-primary text-xl m-0">Molr</h1>
+          <div style={{ width: '40px' }}></div>
+        </div>
         
         <nav className="flex flex-col gap-2 flex-1 w-full">
           {navItems.map((item) => {
