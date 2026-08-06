@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import { db } from '../firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
-import { useData } from '../context/DataContext';
-import { X } from 'lucide-react';
+import { SUBJECTS } from '../data/curriculum';
+import { X, ArrowLeft, Check } from 'lucide-react';
 import { getTodayStr } from '../services/db';
 
 export default function AddBacklogModal({ isOpen, onClose }) {
   const { currentUser } = useAuth();
-  const { subjects, chapters } = useData();
   
   const [subjectId, setSubjectId] = useState('');
   const [chapterId, setChapterId] = useState('');
@@ -17,7 +16,8 @@ export default function AddBacklogModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
-  const filteredChapters = chapters.filter(c => c.subjectId === subjectId);
+  const selectedSubject = SUBJECTS.find(s => s.id === subjectId);
+  const chapters = selectedSubject ? selectedSubject.chapters : [];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,71 +45,133 @@ export default function AddBacklogModal({ isOpen, onClose }) {
     setIsSubmitting(false);
   };
 
+  const resetFlow = () => {
+    setSubjectId('');
+    setChapterId('');
+    setTargetDate(getTodayStr());
+  };
+
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay" onClick={() => { resetFlow(); onClose(); }}>
+      <style>
+        {`
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .hide-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        `}
+      </style>
       <div className="modal-content" onClick={e => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold">Add Catch-Up Target</h2>
-          <button onClick={onClose} className="p-2 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors">
-            <X size={20} className="text-muted" />
+          <div className="flex items-center gap-3">
+            {subjectId && (
+              <button 
+                onClick={() => { setSubjectId(''); setChapterId(''); }} 
+                className="icon-btn p-1"
+                type="button"
+              >
+                <ArrowLeft size={20} />
+              </button>
+            )}
+            <div>
+              <h2 className="text-xl font-semibold">
+                {!subjectId ? "Select Subject" : selectedSubject.name}
+              </h2>
+              {subjectId && (
+                <div className="text-xs text-muted font-medium mt-1">Step 2 of 2</div>
+              )}
+            </div>
+          </div>
+          <button 
+            onClick={() => { resetFlow(); onClose(); }} 
+            className="icon-btn p-1"
+            type="button"
+          >
+            <X size={20} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div>
-            <label className="label">Select Subject</label>
-            <select 
-              className="input"
-              value={subjectId} 
-              onChange={e => { setSubjectId(e.target.value); setChapterId(''); }}
-              required
-            >
-              <option value="">-- Choose Subject --</option>
-              {subjects.map(s => (
-                <option key={s.id} value={s.id}>{s.name}</option>
-              ))}
-            </select>
-          </div>
-          
-          <div>
-            <label className="label">Select Chapter</label>
-            <select 
-              className="input"
-              value={chapterId} 
-              onChange={e => setChapterId(e.target.value)}
-              disabled={!subjectId}
-              required
-            >
-              <option value="">-- Choose Chapter --</option>
-              {filteredChapters.map(c => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
-          </div>
+        <div>
+          {!subjectId ? (
+            /* STEP 1: SUBJECTS */
+            <div>
+              <p className="text-sm text-muted mb-4 font-medium">Choose a subject to see available chapters.</p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
+                {SUBJECTS.map(s => (
+                  <div 
+                    key={s.id} 
+                    onClick={() => setSubjectId(s.id)}
+                    className="card"
+                    style={{ margin: 0, cursor: 'pointer', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
+                  >
+                    <h3 className="font-semibold text-lg">{s.name}</h3>
+                    <div className="text-xs text-muted font-medium">{s.chapters.length} chapters</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            /* STEP 2: CHAPTERS & FORM */
+            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+              <div>
+                <label className="label mb-3">Select Chapter</label>
+                <div className="flex flex-col gap-2 hide-scrollbar" style={{ maxHeight: '45vh', overflowY: 'auto', padding: '4px', margin: '-4px' }}>
+                  {chapters.map(c => {
+                    const isSelected = chapterId === c.id;
+                    return (
+                      <div 
+                        key={c.id}
+                        onClick={() => setChapterId(c.id)}
+                        className="card"
+                        style={{ 
+                          margin: 0, 
+                          cursor: 'pointer', 
+                          padding: '1rem 1.25rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          borderColor: isSelected ? 'var(--primary)' : 'var(--border-color)',
+                          backgroundColor: isSelected ? 'var(--primary-light)' : 'var(--surface)'
+                        }}
+                      >
+                        <span className={`font-medium ${isSelected ? 'text-primary' : ''}`}>{c.name}</span>
+                        {isSelected && <Check size={18} className="text-primary" />}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
 
-          <div>
-            <label className="label">Target Catch-up Date</label>
-            <input 
-              type="date" 
-              className="input"
-              value={targetDate} 
-              min={getTodayStr()}
-              onChange={e => setTargetDate(e.target.value)}
-              required
-            />
-            <p className="text-xs text-muted mt-2 font-medium">
-              We'll calculate your daily tasks to meet this date!
-            </p>
-          </div>
-
-          <button 
-            type="submit" 
-            className="btn btn-primary mt-6 w-full"
-            disabled={isSubmitting || !subjectId || !chapterId || !targetDate}
-          >
-            {isSubmitting ? 'Adding...' : 'Create Catch-up Plan'}
-          </button>
-        </form>
+              {chapterId && (
+                <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1.5rem' }}>
+                  <label className="label">Target Catch-up Date</label>
+                  <input 
+                    type="date" 
+                    className="input"
+                    value={targetDate} 
+                    min={getTodayStr()}
+                    onChange={e => setTargetDate(e.target.value)}
+                    required
+                  />
+                  <p className="text-xs text-muted mt-2 font-medium">
+                    We'll calculate your daily tasks to meet this date!
+                  </p>
+                  
+                  <button 
+                    type="submit" 
+                    className="btn btn-primary w-full mt-6"
+                    disabled={isSubmitting || !subjectId || !chapterId || !targetDate}
+                  >
+                    {isSubmitting ? 'Adding...' : 'Create Catch-up Plan'}
+                  </button>
+                </div>
+              )}
+            </form>
+          )}
+        </div>
       </div>
     </div>
   );
