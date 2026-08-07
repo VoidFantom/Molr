@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
 import { db } from '../firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, writeBatch, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
 import { SUBJECTS } from '../data/curriculum';
 import { X, ArrowLeft, Check } from 'lucide-react';
 import { getTodayStr } from '../services/db';
+import { differenceInDays, addDays, format, parseISO, startOfDay } from 'date-fns';
 
 export default function AddBacklogModal({ isOpen, onClose }) {
   const { currentUser } = useAuth();
   
   const [subjectId, setSubjectId] = useState('');
   const [chapterId, setChapterId] = useState('');
-  const [targetDate, setTargetDate] = useState(getTodayStr());
+  
+  const todayDate = startOfDay(new Date());
+  const minDateStr = format(addDays(todayDate, 1), 'yyyy-MM-dd');
+  const maxDateStr = format(addDays(todayDate, 30), 'yyyy-MM-dd');
+  
+  const [targetDate, setTargetDate] = useState(minDateStr);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) return null;
@@ -19,25 +25,48 @@ export default function AddBacklogModal({ isOpen, onClose }) {
   const selectedSubject = SUBJECTS.find(s => s.id === subjectId);
   const chapters = selectedSubject ? selectedSubject.chapters : [];
 
+  const daysSelected = targetDate ? differenceInDays(parseISO(targetDate), todayDate) : 0;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!subjectId || !chapterId || !targetDate) return;
     
     setIsSubmitting(true);
     try {
-      await addDoc(collection(db, `backlogs/${currentUser.uid}/items`), {
+      const batch = writeBatch(db);
+      const backlogRef = doc(collection(db, `backlogs/${currentUser.uid}/items`));
+      const backlogId = backlogRef.id;
+
+      batch.set(backlogRef, {
         subjectId,
         chapterId,
         startDate: getTodayStr(),
         targetDate,
-        completedTaskIds: [],
         status: 'active',
         createdAt: serverTimestamp()
       });
+
+      let daysAvailable = differenceInDays(parseISO(targetDate), todayDate);
+      if (daysAvailable < 1) daysAvailable = 1;
+      if (daysAvailable > 30) daysAvailable = 30;
+
+      const chapterName = chapters.find(c => c.id === chapterId)?.name || 'Chapter';
+
+      for (let i = 0; i < daysAvailable; i++) {
+        const taskRef = doc(collection(db, `backlogs/${currentUser.uid}/items/${backlogId}/tasks`));
+        batch.set(taskRef, {
+          dayNumber: i + 1,
+          title: `Day ${i + 1} of ${chapterName}`,
+          completed: false,
+          chapterId: chapterId,
+        });
+      }
       
+      await batch.commit();
+
       setSubjectId('');
       setChapterId('');
-      setTargetDate(getTodayStr());
+      setTargetDate(minDateStr);
       onClose();
     } catch (err) {
       console.error(err);
@@ -48,7 +77,7 @@ export default function AddBacklogModal({ isOpen, onClose }) {
   const resetFlow = () => {
     setSubjectId('');
     setChapterId('');
-    setTargetDate(getTodayStr());
+    setTargetDate(minDateStr);
   };
 
   return (
@@ -137,7 +166,7 @@ export default function AddBacklogModal({ isOpen, onClose }) {
                           backgroundColor: isSelected ? 'var(--primary-light)' : 'var(--surface)'
                         }}
                       >
-                        <span className={`font-medium ${isSelected ? 'text-primary' : ''}`}>{c.name}</span>
+                        <span className={`font-medium ${isSelected ? 'text-primary' : ''}`}>Chapter {c.chapterNumber}: {c.name}</span>
                         {isSelected && <Check size={18} className="text-primary" />}
                       </div>
                     );
@@ -152,7 +181,8 @@ export default function AddBacklogModal({ isOpen, onClose }) {
                     type="date" 
                     className="input"
                     value={targetDate} 
-                    min={getTodayStr()}
+                    min={minDateStr}
+                    max={maxDateStr}
                     onChange={e => setTargetDate(e.target.value)}
                     required
                   />
@@ -160,9 +190,15 @@ export default function AddBacklogModal({ isOpen, onClose }) {
                     We'll calculate your daily tasks to meet this date!
                   </p>
                   
+                  {daysSelected > 15 && (
+                    <div className="mt-4 text-sm font-medium" style={{ color: 'var(--warning-text, #d97706)' }}>
+                      That's a relaxed pace — this chapter may take a while at this rate.
+                    </div>
+                  )}
+                  
                   <button 
                     type="submit" 
-                    className="btn btn-primary w-full mt-6"
+                    className="btn btn-primary w-full mt-4"
                     disabled={isSubmitting || !subjectId || !chapterId || !targetDate}
                   >
                     {isSubmitting ? 'Adding...' : 'Create Catch-up Plan'}
@@ -176,3 +212,4 @@ export default function AddBacklogModal({ isOpen, onClose }) {
     </div>
   );
 }
+

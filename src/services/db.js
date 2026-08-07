@@ -118,3 +118,24 @@ export async function toggleTaskCompletion(uid, backlogId, taskId, isCompleted, 
 
   await batch.commit();
 }
+
+export async function toggleDynamicTaskCompletion(uid, backlogId, taskId, isCompleted, allTasks) {
+  const batch = writeBatch(db);
+  
+  // 1. Update the specific task's completed status
+  const taskRef = doc(db, `backlogs/${uid}/items/${backlogId}/tasks`, taskId);
+  batch.update(taskRef, { completed: isCompleted });
+
+  // 2. Check if all tasks for this backlog are completed
+  const willBeCompleted = allTasks.every(t => t.id === taskId ? isCompleted : t.completed);
+
+  const backlogRef = doc(db, `backlogs/${uid}/items`, backlogId);
+  
+  if (willBeCompleted) {
+    batch.update(backlogRef, { status: 'completed' });
+  } else {
+    batch.update(backlogRef, { status: 'active' });
+  }
+
+  await batch.commit();
+}
