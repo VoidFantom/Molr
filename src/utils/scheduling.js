@@ -1,12 +1,17 @@
 import { differenceInDays, parseISO } from 'date-fns';
 
 export function computeTodaysTasks(chapterTasks, completedTaskIds, targetDateStr, todayStr) {
+  // 0. If the chapter has no tasks defined yet, it's not done (avoid auto-completing newly added backlogs)
+  if (chapterTasks.length === 0) {
+    return { taskIds: [], done: false };
+  }
+
   // 1. Filter chapterTasks to only those NOT in completedTaskIds, sorted by order
   const remaining = chapterTasks
     .filter(t => !completedTaskIds.includes(t.id))
     .sort((a, b) => a.order - b.order);
 
-  // 2. If none remain, return {taskIds: [], done: true}
+  // 2. If tasks exist but none remain to be done, it's actually finished
   if (remaining.length === 0) {
     return { taskIds: [], done: true };
   }

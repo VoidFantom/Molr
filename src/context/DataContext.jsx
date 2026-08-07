@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { db } from '../firebase';
-import { collection, doc, onSnapshot, query, where, getDocs, orderBy } from 'firebase/firestore';
+import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { useAuth } from './AuthContext';
+import { SUBJECTS } from '../data/curriculum';
 
 const DataContext = createContext();
 
@@ -18,24 +19,18 @@ export function DataProvider({ children }) {
   const [activeBacklogs, setActiveBacklogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Initialize static data from curriculum.js
   useEffect(() => {
-    console.log("[DataContext] fetching static data...");
-    const fetchStaticData = async () => {
-      try {
-        const subjSnap = await getDocs(query(collection(db, 'subjects'), orderBy('order')));
-        const subjs = subjSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-        setSubjects(subjs);
-        console.log("[DataContext] subjects loaded:", subjs.length);
-
-        const chapSnap = await getDocs(query(collection(db, 'chapters'), orderBy('order')));
-        const chaps = chapSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-        setChapters(chaps);
-        console.log("[DataContext] chapters loaded:", chaps.length);
-      } catch (err) {
-        console.error("[DataContext] Error fetching static data:", err);
-      }
-    };
-    fetchStaticData();
+    console.log("[DataContext] loading static data from curriculum.js...");
+    const subjs = SUBJECTS.map(s => ({ id: s.id, name: s.name }));
+    const chaps = SUBJECTS.flatMap(s => 
+      s.chapters.map(c => ({ id: c.id, name: c.name, subjectId: s.id, tasks: c.tasks || [] }))
+    );
+    
+    setSubjects(subjs);
+    console.log("[DataContext] subjects loaded:", subjs.length);
+    setChapters(chaps);
+    console.log("[DataContext] chapters loaded:", chaps.length);
   }, []);
 
   useEffect(() => {
