@@ -139,3 +139,79 @@ export async function toggleDynamicTaskCompletion(uid, backlogId, taskId, isComp
 
   await batch.commit();
 }
+
+export async function deleteBacklog(uid, backlogId) {
+  // Query all tasks for this backlog
+  const tasksRef = collection(db, `backlogs/${uid}/items/${backlogId}/tasks`);
+  const tasksSnap = await getDocs(tasksRef);
+  
+  const batches = [];
+  let currentBatch = writeBatch(db);
+  let operationCount = 0;
+
+  // Add tasks to delete batch (limit 500 per batch)
+  tasksSnap.forEach((docSnap) => {
+    if (operationCount === 499) {
+      batches.push(currentBatch);
+      currentBatch = writeBatch(db);
+      operationCount = 0;
+    }
+    currentBatch.delete(docSnap.ref);
+    operationCount++;
+  });
+
+  // Finally, delete the backlog doc itself
+  if (operationCount === 499) {
+    batches.push(currentBatch);
+    currentBatch = writeBatch(db);
+    operationCount = 0;
+  }
+  const backlogRef = doc(db, `backlogs/${uid}/items`, backlogId);
+  currentBatch.delete(backlogRef);
+  batches.push(currentBatch);
+
+  // Commit all batches
+  for (const b of batches) {
+    await b.commit();
+  }
+}
+
+export async function deleteAccountData(uid) {
+  const backlogsRef = collection(db, `backlogs/${uid}/items`);
+  const backlogsSnap = await getDocs(backlogsRef);
+  
+  const batches = [];
+  let currentBatch = writeBatch(db);
+  let operationCount = 0;
+
+  const pushToBatch = (ref) => {
+    if (operationCount === 499) {
+      batches.push(currentBatch);
+      currentBatch = writeBatch(db);
+      operationCount = 0;
+    }
+    currentBatch.delete(ref);
+    operationCount++;
+  };
+
+  for (const backlogDoc of backlogsSnap.docs) {
+    const tasksRef = collection(db, `backlogs/${uid}/items/${backlogDoc.id}/tasks`);
+    const tasksSnap = await getDocs(tasksRef);
+    
+    for (const taskDoc of tasksSnap.docs) {
+      pushToBatch(taskDoc.ref);
+    }
+    pushToBatch(backlogDoc.ref);
+  }
+
+  const userRef = doc(db, `users/${uid}`);
+  pushToBatch(userRef);
+
+  if (operationCount > 0) {
+    batches.push(currentBatch);
+  }
+
+  for (const b of batches) {
+    await b.commit();
+  }
+}

@@ -20,11 +20,26 @@ export function ThemeProvider({ children }) {
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   });
   
+  const [reduceMotion, setReduceMotion] = useState(() => {
+    const saved = localStorage.getItem('molr_reduce_motion');
+    if (saved !== null) return saved === 'true';
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  });
+  
   const [preview, setPreview] = useState(null);
 
   useEffect(() => {
     localStorage.setItem('molr_theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem('molr_reduce_motion', reduceMotion.toString());
+    if (reduceMotion) {
+      document.documentElement.classList.add('reduce-motion');
+    } else {
+      document.documentElement.classList.remove('reduce-motion');
+    }
+  }, [reduceMotion]);
 
   useEffect(() => {
     const activeTheme = preview || theme;
@@ -50,8 +65,12 @@ export function ThemeProvider({ children }) {
     setPreview(null);
   };
 
+  const toggleReduceMotion = () => {
+    setReduceMotion(prev => !prev);
+  };
+
   return (
-    <ThemeContext.Provider value={{ theme, previewTheme, clearPreview, commitTheme }}>
+    <ThemeContext.Provider value={{ theme, previewTheme, clearPreview, commitTheme, reduceMotion, toggleReduceMotion }}>
       {children}
     </ThemeContext.Provider>
   );
