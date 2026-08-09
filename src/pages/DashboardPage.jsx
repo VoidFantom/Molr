@@ -67,11 +67,31 @@ export default function DashboardPage() {
                 </div>
               )}
 
+              <style>{`
+                .archive-btn-glow {
+                  background-color: color-mix(in srgb, var(--text-muted) 5%, transparent);
+                  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+                .archive-btn-glow:hover, .archive-btn-glow[aria-expanded="true"] {
+                  background-color: var(--primary-light);
+                  box-shadow: 0 0 12px color-mix(in srgb, var(--primary) 30%, transparent);
+                }
+                .archive-btn-glow:active {
+                  transform: scale(0.98);
+                }
+                html.reduce-motion .archive-btn-glow,
+                html.reduce-motion .archive-btn-glow:hover,
+                html.reduce-motion .archive-btn-glow:active {
+                  transition: none !important;
+                  transform: none !important;
+                }
+              `}</style>
+
               {archivedBacklogs.length > 0 && (
                 <div className="mt-12">
                   <button 
                     onClick={() => setShowArchived(!showArchived)}
-                    className="flex items-center gap-3 w-full group focus-visible p-2 -ml-2 rounded-lg transition-colors hover:bg-black/5 dark:hover:bg-white/5"
+                    className={`flex items-center gap-3 w-full group focus-visible p-3 rounded-xl archive-btn-glow`}
                     aria-expanded={showArchived}
                     aria-controls="archived-list"
                   >

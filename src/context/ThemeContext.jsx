@@ -52,8 +52,18 @@ export function ThemeProvider({ children }) {
   useEffect(() => {
     localStorage.setItem('molr_font_scale', fontScale);
     document.documentElement.classList.remove('font-small', 'font-large');
-    if (fontScale === 'small') document.documentElement.classList.add('font-small');
-    if (fontScale === 'large') document.documentElement.classList.add('font-large');
+    
+    // Fix: Tailwind uses rems based on the html element's font-size.
+    // Setting it directly on document.documentElement forces all rem values to scale app-wide immediately.
+    if (fontScale === 'small') {
+      document.documentElement.classList.add('font-small');
+      document.documentElement.style.fontSize = '12px';
+    } else if (fontScale === 'large') {
+      document.documentElement.classList.add('font-large');
+      document.documentElement.style.fontSize = '16px';
+    } else {
+      document.documentElement.style.fontSize = '14px';
+    }
   }, [fontScale]);
 
   useEffect(() => {

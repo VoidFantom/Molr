@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { useTheme } from '../context/ThemeContext';
-import { LogOut, Trash2 } from 'lucide-react';
+import { LogOut, Trash2, ChevronDown, Check } from 'lucide-react';
 import { db, auth } from '../firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import { updatePassword, deleteUser } from 'firebase/auth';
@@ -37,6 +37,7 @@ export default function SettingsPage() {
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  const [isFontDropdownOpen, setIsFontDropdownOpen] = useState(false);
 
   const isPasswordProvider = currentUser?.providerData?.some(p => p.providerId === 'password');
 
@@ -171,25 +172,65 @@ export default function SettingsPage() {
                     <div className="text-sm">Font Size</div>
                     <div className="text-xs text-muted font-normal mt-0.5">Scale the interface text size.</div>
                   </div>
-                  <div className="flex items-center gap-1 p-1 rounded-lg border" style={{ borderColor: 'var(--border-color)', backgroundColor: 'var(--bg-color)' }}>
-                    {['small', 'default', 'large'].map(scale => (
-                      <button
-                        key={scale}
-                        onClick={() => setFontScale(scale)}
-                        className="px-3 py-1 rounded-md text-sm font-medium transition-colors focus-visible"
-                        style={{
-                          backgroundColor: fontScale === scale ? 'var(--surface)' : 'transparent',
-                          color: fontScale === scale ? 'var(--primary)' : 'var(--text-muted)',
-                          boxShadow: fontScale === scale ? 'var(--shadow-sm)' : 'none'
-                        }}
-                        aria-label={`Set font size to ${scale}`}
-                      >
-                        {scale === 'small' ? 'A' : scale === 'default' ? 'A' : 'A'}
-                        {scale === 'default' && <span className="sr-only">Default</span>}
-                        {scale === 'small' && <span className="text-[10px] ml-0.5 font-bold tracking-tighter">sm</span>}
-                        {scale === 'large' && <span className="text-base ml-0.5 font-bold tracking-tighter">L</span>}
-                      </button>
-                    ))}
+                  <style>{`
+                    .font-btn-glow {
+                      background-color: color-mix(in srgb, var(--text-muted) 5%, transparent);
+                      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+                    }
+                    .font-btn-glow:hover, .font-btn-glow[aria-expanded="true"] {
+                      background-color: var(--primary-light);
+                      box-shadow: 0 0 12px color-mix(in srgb, var(--primary) 30%, transparent);
+                    }
+                    .font-btn-glow:active {
+                      transform: scale(0.98);
+                    }
+                    .font-dropdown-item-hover:hover, .font-dropdown-item-hover:focus-visible {
+                      background-color: var(--primary-light);
+                    }
+                    html.reduce-motion .font-btn-glow,
+                    html.reduce-motion .font-btn-glow:hover,
+                    html.reduce-motion .font-btn-glow:active {
+                      transition: none !important;
+                      transform: none !important;
+                    }
+                  `}</style>
+                  
+                  <div className="relative w-48" onMouseLeave={() => setIsFontDropdownOpen(false)}>
+                    <button
+                      onClick={() => setIsFontDropdownOpen(!isFontDropdownOpen)}
+                      className="flex items-center justify-between gap-3 w-full p-2.5 rounded-lg border focus-visible font-btn-glow"
+                      style={{ borderColor: 'transparent' }}
+                      aria-expanded={isFontDropdownOpen}
+                      aria-label="Select Font Size"
+                    >
+                      <span className="text-sm font-medium" style={{ color: 'var(--text-main)' }}>
+                        {fontScale === 'small' ? 'Small' : fontScale === 'large' ? 'Large' : 'Medium (Default)'}
+                      </span>
+                      <ChevronDown size={18} className="text-muted" style={{ transform: isFontDropdownOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s ease' }} />
+                    </button>
+
+                    {isFontDropdownOpen && (
+                      <div className="absolute right-0 top-full mt-1 w-full rounded-xl shadow-lg border z-50 overflow-hidden dropdown-anim" style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border-color)' }}>
+                        {[
+                          { id: 'small', label: 'Small' },
+                          { id: 'default', label: 'Medium (Default)' },
+                          { id: 'large', label: 'Large' }
+                        ].map(opt => (
+                          <button
+                            key={opt.id}
+                            className="w-full flex items-center justify-between p-3 text-left transition-colors font-medium text-sm focus-visible font-dropdown-item-hover"
+                            style={{ color: fontScale === opt.id ? 'var(--primary)' : 'var(--text-main)', backgroundColor: fontScale === opt.id ? 'var(--bg-color)' : 'transparent' }}
+                            onClick={() => {
+                              setFontScale(opt.id);
+                              setIsFontDropdownOpen(false);
+                            }}
+                          >
+                            <span>{opt.label}</span>
+                            {fontScale === opt.id && <Check size={16} style={{ color: 'var(--primary)' }} />}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
 

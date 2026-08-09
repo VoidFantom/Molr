@@ -19,6 +19,10 @@ export default function BacklogCard({ backlog }) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
+  
+  const [isKebabHovered, setIsKebabHovered] = useState(false);
+  const [isKebabActive, setIsKebabActive] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState(null);
   const menuRef = useRef(null);
 
   const subject = subjects.find(s => s.id === backlog.subjectId);
@@ -112,21 +116,33 @@ export default function BacklogCard({ backlog }) {
               <BookOpen size={20} />
             </div>
             
-            <div className="relative" ref={menuRef}>
+            <div className="relative" ref={menuRef} style={{ position: 'relative' }}>
               <button 
+                onMouseEnter={() => setIsKebabHovered(true)}
+                onMouseLeave={() => { setIsKebabHovered(false); setIsKebabActive(false); }}
+                onMouseDown={() => setIsKebabActive(true)}
+                onMouseUp={() => setIsKebabActive(false)}
+                onTouchStart={() => setIsKebabActive(true)}
+                onTouchEnd={() => setIsKebabActive(false)}
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className={`p-1.5 rounded-lg transition-colors focus-visible kebab-button ${isMenuOpen ? 'bg-black/5 dark:bg-white/5 kebab-open' : 'hover:bg-black/5 dark:hover:bg-white/5'}`}
+                className={`flex items-center justify-center focus-visible`}
                 aria-label="Options"
                 aria-expanded={isMenuOpen}
                 aria-haspopup="true"
                 style={{
-                  color: isMenuOpen ? 'var(--primary)' : 'var(--text-muted)'
+                  color: isMenuOpen ? 'var(--primary)' : 'var(--text-muted)',
+                  boxShadow: (isKebabHovered || isMenuOpen) ? '0 0 6px color-mix(in srgb, var(--primary) 50%, transparent)' : 'none',
+                  backgroundColor: (isKebabHovered || isMenuOpen) ? 'var(--primary-light)' : 'transparent',
+                  borderRadius: '6px',
+                  padding: '4px',
+                  transform: isKebabActive ? 'scale(0.94)' : 'scale(1)',
+                  transition: 'box-shadow 150ms ease-out, background-color 150ms ease-out, transform 150ms ease-out, color 150ms ease-out'
                 }}
               >
                 <MoreVertical 
                   size={20} 
                   style={{ 
-                    transform: isMenuOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+                    transform: isMenuOpen ? 'rotate(90deg)' : (isKebabHovered ? 'scale(1.1)' : 'rotate(0deg) scale(1)'),
                     transition: 'transform 0.15s cubic-bezier(0.4, 0, 0.2, 1)' 
                   }} 
                 />
@@ -134,17 +150,28 @@ export default function BacklogCard({ backlog }) {
               
               {isMenuOpen && (
                 <div 
-                  className="absolute right-0 mt-1 w-48 rounded-lg shadow-lg py-1 z-10 border dropdown-anim"
-                  style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border-color)' }}
+                  className="mt-1 w-48 rounded-lg shadow-lg py-1 z-10 dropdown-anim"
+                  style={{ 
+                    backgroundColor: 'var(--surface)', 
+                    color: 'var(--text-main)',
+                    border: '1px solid var(--border-color)',
+                    position: 'absolute',
+                    right: 0
+                  }}
                   role="menu"
                 >
                   <button
+                    onMouseEnter={() => setHoveredItem('details')}
+                    onMouseLeave={() => setHoveredItem(null)}
                     onClick={() => {
                       setIsMenuOpen(false);
                       console.log("View Details clicked for:", backlog.id);
                     }}
-                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors hover:bg-black/5 dark:hover:bg-white/5 focus-visible stagger-item stagger-delay-1"
-                    style={{ color: 'var(--text-main)' }}
+                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors focus-visible stagger-item stagger-delay-1"
+                    style={{ 
+                      color: 'var(--text-main)',
+                      backgroundColor: hoveredItem === 'details' ? 'var(--primary-light)' : 'transparent'
+                    }}
                     role="menuitem"
                   >
                     <Eye size={16} className="text-muted" />
@@ -152,6 +179,8 @@ export default function BacklogCard({ backlog }) {
                   </button>
                   
                   <button
+                    onMouseEnter={() => setHoveredItem('archive')}
+                    onMouseLeave={() => setHoveredItem(null)}
                     onClick={() => {
                       setIsMenuOpen(false);
                       setIsExiting(true);
@@ -164,8 +193,11 @@ export default function BacklogCard({ backlog }) {
                         }
                       }, 200);
                     }}
-                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors hover:bg-black/5 dark:hover:bg-white/5 focus-visible stagger-item stagger-delay-2"
-                    style={{ color: 'var(--text-main)' }}
+                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors focus-visible stagger-item stagger-delay-2"
+                    style={{ 
+                      color: 'var(--text-main)',
+                      backgroundColor: hoveredItem === 'archive' ? 'var(--primary-light)' : 'transparent'
+                    }}
                     role="menuitem"
                   >
                     <Archive size={16} className="text-muted" />
@@ -175,15 +207,20 @@ export default function BacklogCard({ backlog }) {
                   <div className="border-t my-1 mx-2 stagger-item stagger-delay-3" style={{ borderColor: 'var(--border-color)' }}></div>
                   
                   <button
+                    onMouseEnter={() => setHoveredItem('delete')}
+                    onMouseLeave={() => setHoveredItem(null)}
                     onClick={() => {
                       setIsMenuOpen(false);
                       setIsDeleteModalOpen(true);
                     }}
-                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors hover:bg-red-50 dark:hover:bg-red-900/20 focus-visible group stagger-item stagger-delay-4"
-                    style={{ color: 'var(--danger)' }}
+                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors focus-visible stagger-item stagger-delay-4"
+                    style={{ 
+                      color: 'var(--danger)',
+                      backgroundColor: hoveredItem === 'delete' ? 'var(--primary-light)' : 'transparent'
+                    }}
                     role="menuitem"
                   >
-                    <Trash2 size={16} className="transition-colors group-hover:text-red-600 dark:group-hover:text-red-400" />
+                    <Trash2 size={16} style={{ color: hoveredItem === 'delete' ? 'var(--danger)' : 'currentColor' }} className="transition-colors" />
                     Delete Backlog
                   </button>
                 </div>
