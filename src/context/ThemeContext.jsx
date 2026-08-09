@@ -25,6 +25,14 @@ export function ThemeProvider({ children }) {
     if (saved !== null) return saved === 'true';
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   });
+
+  const [fontScale, setFontScale] = useState(() => {
+    return localStorage.getItem('molr_font_scale') || 'default';
+  });
+
+  const [highContrast, setHighContrast] = useState(() => {
+    return localStorage.getItem('molr_high_contrast') === 'true';
+  });
   
   const [preview, setPreview] = useState(null);
 
@@ -40,6 +48,22 @@ export function ThemeProvider({ children }) {
       document.documentElement.classList.remove('reduce-motion');
     }
   }, [reduceMotion]);
+
+  useEffect(() => {
+    localStorage.setItem('molr_font_scale', fontScale);
+    document.documentElement.classList.remove('font-small', 'font-large');
+    if (fontScale === 'small') document.documentElement.classList.add('font-small');
+    if (fontScale === 'large') document.documentElement.classList.add('font-large');
+  }, [fontScale]);
+
+  useEffect(() => {
+    localStorage.setItem('molr_high_contrast', highContrast.toString());
+    if (highContrast) {
+      document.documentElement.classList.add('high-contrast');
+    } else {
+      document.documentElement.classList.remove('high-contrast');
+    }
+  }, [highContrast]);
 
   useEffect(() => {
     const activeTheme = preview || theme;
@@ -69,8 +93,17 @@ export function ThemeProvider({ children }) {
     setReduceMotion(prev => !prev);
   };
 
+  const toggleHighContrast = () => {
+    setHighContrast(prev => !prev);
+  };
+
   return (
-    <ThemeContext.Provider value={{ theme, previewTheme, clearPreview, commitTheme, reduceMotion, toggleReduceMotion }}>
+    <ThemeContext.Provider value={{ 
+      theme, previewTheme, clearPreview, commitTheme, 
+      reduceMotion, toggleReduceMotion,
+      fontScale, setFontScale,
+      highContrast, toggleHighContrast
+    }}>
       {children}
     </ThemeContext.Provider>
   );

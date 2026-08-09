@@ -215,3 +215,10 @@ export async function deleteAccountData(uid) {
     await b.commit();
   }
 }
+
+export async function archiveBacklog(uid, backlogId, isArchived) {
+  const backlogRef = doc(db, `backlogs/${uid}/items`, backlogId);
+  await updateDoc(backlogRef, {
+    archived: isArchived
+  });
+}

@@ -16,7 +16,11 @@ import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 export default function SettingsPage() {
   const { currentUser } = useAuth();
   const { userData } = useData();
-  const { reduceMotion, toggleReduceMotion } = useTheme();
+  const { 
+    reduceMotion, toggleReduceMotion,
+    fontScale, setFontScale,
+    highContrast, toggleHighContrast 
+  } = useTheme();
   
   const [displayName, setDisplayName] = useState(userData?.displayName || currentUser?.displayName || '');
   const [savingProfile, setSavingProfile] = useState(false);
@@ -155,7 +159,58 @@ export default function SettingsPage() {
                     <ThemeDropdown />
                   </div>
                 </div>
+              </div>
+            </section>
+            
+            <section className="mb-4">
+              <h2 className="section-header text-muted mb-3">Accessibility</h2>
+              <div className="card p-4 flex flex-col gap-4">
                 
+                <div className="flex items-center justify-between">
+                  <div className="font-medium">
+                    <div className="text-sm">Font Size</div>
+                    <div className="text-xs text-muted font-normal mt-0.5">Scale the interface text size.</div>
+                  </div>
+                  <div className="flex items-center gap-1 p-1 rounded-lg border" style={{ borderColor: 'var(--border-color)', backgroundColor: 'var(--bg-color)' }}>
+                    {['small', 'default', 'large'].map(scale => (
+                      <button
+                        key={scale}
+                        onClick={() => setFontScale(scale)}
+                        className="px-3 py-1 rounded-md text-sm font-medium transition-colors focus-visible"
+                        style={{
+                          backgroundColor: fontScale === scale ? 'var(--surface)' : 'transparent',
+                          color: fontScale === scale ? 'var(--primary)' : 'var(--text-muted)',
+                          boxShadow: fontScale === scale ? 'var(--shadow-sm)' : 'none'
+                        }}
+                        aria-label={`Set font size to ${scale}`}
+                      >
+                        {scale === 'small' ? 'A' : scale === 'default' ? 'A' : 'A'}
+                        {scale === 'default' && <span className="sr-only">Default</span>}
+                        {scale === 'small' && <span className="text-[10px] ml-0.5 font-bold tracking-tighter">sm</span>}
+                        {scale === 'large' && <span className="text-base ml-0.5 font-bold tracking-tighter">L</span>}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="border-t border-color my-1"></div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="font-medium">
+                    <div className="text-sm">High Contrast</div>
+                    <div className="text-xs text-muted font-normal mt-0.5">Increase legibility with stronger colors.</div>
+                  </div>
+                  <button 
+                    onClick={toggleHighContrast}
+                    className={`toggle-switch ${highContrast ? 'on' : ''} focus-visible`}
+                    aria-label="Toggle High Contrast"
+                    role="switch"
+                    aria-checked={highContrast}
+                  >
+                    <div className="toggle-thumb"></div>
+                  </button>
+                </div>
+
                 <div className="border-t border-color my-1"></div>
                 
                 <div className="flex items-center justify-between">
@@ -165,15 +220,15 @@ export default function SettingsPage() {
                   </div>
                   <button 
                     onClick={toggleReduceMotion}
-                    className="relative w-11 h-6 rounded-full transition-colors flex-shrink-0"
-                    style={{ backgroundColor: reduceMotion ? 'var(--primary)' : 'var(--border-color)' }}
+                    className={`toggle-switch ${reduceMotion ? 'on' : ''} focus-visible`}
+                    aria-label="Toggle Reduce Motion"
+                    role="switch"
+                    aria-checked={reduceMotion}
                   >
-                    <div 
-                      className="absolute top-1 left-1 bg-white rounded-full h-4 w-4 transition-transform"
-                      style={{ transform: reduceMotion ? 'translateX(20px)' : 'translateX(0)' }}
-                    ></div>
+                    <div className="toggle-thumb"></div>
                   </button>
                 </div>
+
               </div>
             </section>
 

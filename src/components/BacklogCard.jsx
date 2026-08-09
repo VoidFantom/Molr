@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { BookOpen, CheckCircle, MoreVertical, Trash2 } from 'lucide-react';
+import { BookOpen, CheckCircle, MoreVertical, Trash2, Eye, Archive } from 'lucide-react';
 import { db } from '../firebase';
 import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
-import { toggleDynamicTaskCompletion, deleteBacklog } from '../services/db';
+import { toggleDynamicTaskCompletion, deleteBacklog, archiveBacklog } from '../services/db';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import TaskItem from './TaskItem';
@@ -106,24 +106,67 @@ export default function BacklogCard({ backlog }) {
             <div className="relative" ref={menuRef}>
               <button 
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-muted"
+                className={`p-1.5 rounded-lg transition-colors focus-visible ${isMenuOpen ? 'bg-black/5 dark:bg-white/5 text-primary' : 'hover:bg-black/5 dark:hover:bg-white/5 text-muted'}`}
                 aria-label="Options"
+                aria-expanded={isMenuOpen}
+                aria-haspopup="true"
+                style={{ 
+                  transform: 'scale(1)',
+                  transition: 'transform 0.15s ease, background-color 0.2s ease, color 0.2s ease'
+                }}
+                onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.94)'}
+                onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
               >
                 <MoreVertical size={20} />
               </button>
               
               {isMenuOpen && (
                 <div 
-                  className="absolute right-0 mt-1 w-48 rounded-lg shadow-lg py-1 z-10 border"
-                  style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border-color)', animation: 'scaleIn 0.15s ease-out' }}
+                  className="absolute right-0 mt-1 w-48 rounded-lg shadow-lg py-1 z-10 border dropdown-anim"
+                  style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border-color)' }}
+                  role="menu"
                 >
+                  <button
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      console.log("View Details clicked for:", backlog.id);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors hover:bg-black/5 dark:hover:bg-white/5 focus-visible"
+                    style={{ color: 'var(--text-main)' }}
+                    role="menuitem"
+                  >
+                    <Eye size={16} className="text-muted" />
+                    View Details
+                  </button>
+                  
+                  <button
+                    onClick={async () => {
+                      setIsMenuOpen(false);
+                      try {
+                        await archiveBacklog(currentUser.uid, backlog.id, !backlog.archived);
+                      } catch (e) {
+                        console.error("Error toggling archive status", e);
+                      }
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors hover:bg-black/5 dark:hover:bg-white/5 focus-visible"
+                    style={{ color: 'var(--text-main)' }}
+                    role="menuitem"
+                  >
+                    <Archive size={16} className="text-muted" />
+                    {backlog.archived ? "Unarchive Backlog" : "Archive Backlog"}
+                  </button>
+
+                  <div className="border-t my-1 mx-2" style={{ borderColor: 'var(--border-color)' }}></div>
+                  
                   <button
                     onClick={() => {
                       setIsMenuOpen(false);
                       setIsDeleteModalOpen(true);
                     }}
-                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors hover:bg-red-50 dark:hover:bg-red-900/20"
+                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors hover:bg-red-50 dark:hover:bg-red-900/20 focus-visible"
                     style={{ color: 'var(--danger)' }}
+                    role="menuitem"
                   >
                     <Trash2 size={16} />
                     Delete Backlog
