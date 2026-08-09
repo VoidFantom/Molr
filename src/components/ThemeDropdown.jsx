@@ -27,7 +27,7 @@ export default function ThemeDropdown() {
     <div className="relative w-full" ref={dropdownRef} onMouseLeave={handleMouseLeave}>
       <button 
         type="button"
-        className="w-full flex items-center justify-between p-3 rounded-lg border border-transparent menu-item-hover focus-visible"
+        className="w-full flex items-center justify-between p-3 rounded-lg border border-transparent transition-colors hover:bg-black/5 dark:hover:bg-white/5 focus-visible"
         style={{ backgroundColor: isOpen ? 'var(--bg-color)' : 'transparent', color: 'var(--text-main)' }}
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Select Theme"
@@ -44,7 +44,7 @@ export default function ThemeDropdown() {
           {themes.map((t) => (
             <button
               key={t.id}
-              className="w-full flex items-center gap-3 p-3 text-left font-medium menu-item-hover focus-visible"
+              className="w-full flex items-center gap-3 p-3 text-left transition-colors font-medium hover:bg-black/5 dark:hover:bg-white/5 focus-visible"
               style={{ backgroundColor: theme === t.id ? 'var(--bg-color)' : 'transparent' }}
               onMouseEnter={() => previewTheme(t.id)}
               onClick={() => {

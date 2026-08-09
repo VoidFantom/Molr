@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { useTheme } from '../context/ThemeContext';
-import { LogOut, Trash2, ChevronDown } from 'lucide-react';
+import { LogOut, Trash2 } from 'lucide-react';
 import { db, auth } from '../firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import { updatePassword, deleteUser } from 'firebase/auth';
@@ -12,66 +12,6 @@ import ThemeDropdown from '../components/ThemeDropdown';
 import LogoutModal from '../components/LogoutModal';
 import ReauthModal from '../components/ReauthModal';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
-
-function FontDropdown() {
-  const { fontScale, setFontScale } = useTheme();
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef(null);
-
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const options = [
-    { id: 'small', label: 'Small' },
-    { id: 'default', label: 'Medium (default)' },
-    { id: 'large', label: 'Large' }
-  ];
-
-  const activeOption = options.find(o => o.id === fontScale) || options[1];
-
-  return (
-    <div className="relative w-full mt-2" ref={dropdownRef}>
-      <button 
-        type="button"
-        className="w-full flex items-center justify-between p-3 rounded-lg border border-transparent menu-item-hover focus-visible"
-        style={{ backgroundColor: isOpen ? 'var(--bg-color)' : 'transparent', color: 'var(--text-main)' }}
-        onClick={() => setIsOpen(!isOpen)}
-        aria-label="Select Font Size"
-      >
-        <div className="font-medium">
-          {activeOption.label}
-        </div>
-        <ChevronDown size={20} className="text-muted" style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s ease' }} />
-      </button>
-
-      {isOpen && (
-        <div className="absolute top-full mt-1 w-full rounded-xl shadow-lg border z-50 overflow-hidden dropdown-anim" style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border-color)' }}>
-          {options.map((opt) => (
-            <button
-              key={opt.id}
-              className="w-full flex items-center p-3 text-left font-medium menu-item-hover focus-visible"
-              style={{ backgroundColor: fontScale === opt.id ? 'var(--bg-color)' : 'transparent' }}
-              onClick={() => {
-                setFontScale(opt.id);
-                setIsOpen(false);
-              }}
-              aria-label={`Set font size to ${opt.label}`}
-            >
-              <span style={{ color: fontScale === opt.id ? 'var(--primary)' : 'var(--text-main)' }}>{opt.label}</span>
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
 
 export default function SettingsPage() {
   const { currentUser } = useAuth();
@@ -227,10 +167,29 @@ export default function SettingsPage() {
               <div className="card p-4 flex flex-col gap-4">
                 
                 <div className="flex items-center justify-between">
-                  <div className="font-medium w-full">
+                  <div className="font-medium">
                     <div className="text-sm">Font Size</div>
                     <div className="text-xs text-muted font-normal mt-0.5">Scale the interface text size.</div>
-                    <FontDropdown />
+                  </div>
+                  <div className="flex items-center gap-1 p-1 rounded-lg border" style={{ borderColor: 'var(--border-color)', backgroundColor: 'var(--bg-color)' }}>
+                    {['small', 'default', 'large'].map(scale => (
+                      <button
+                        key={scale}
+                        onClick={() => setFontScale(scale)}
+                        className="px-3 py-1 rounded-md text-sm font-medium transition-colors focus-visible"
+                        style={{
+                          backgroundColor: fontScale === scale ? 'var(--surface)' : 'transparent',
+                          color: fontScale === scale ? 'var(--primary)' : 'var(--text-muted)',
+                          boxShadow: fontScale === scale ? 'var(--shadow-sm)' : 'none'
+                        }}
+                        aria-label={`Set font size to ${scale}`}
+                      >
+                        {scale === 'small' ? 'A' : scale === 'default' ? 'A' : 'A'}
+                        {scale === 'default' && <span className="sr-only">Default</span>}
+                        {scale === 'small' && <span className="text-[10px] ml-0.5 font-bold tracking-tighter">sm</span>}
+                        {scale === 'large' && <span className="text-base ml-0.5 font-bold tracking-tighter">L</span>}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
