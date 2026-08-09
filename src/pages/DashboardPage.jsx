@@ -69,6 +69,8 @@ export default function DashboardPage() {
 
               <style>{`
                 .archive-btn-glow {
+                  border: none;
+                  cursor: pointer;
                   background-color: color-mix(in srgb, var(--text-muted) 5%, transparent);
                   transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
                 }

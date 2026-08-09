@@ -126,10 +126,38 @@
   padding: 0;
 }
 
+button {
+  font-family: inherit;
+  border: none;
+  background: transparent;
+  color: inherit;
+}
+
 *:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+.dropdown-trigger {
+  border: none;
+  background-color: color-mix(in srgb, var(--text-muted) 5%, transparent);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+.dropdown-trigger:hover,
+.dropdown-trigger[aria-expanded="true"] {
+  background-color: var(--primary-light);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--primary) 30%, transparent);
+}
+.dropdown-trigger:active {
+  transform: scale(0.98);
+}
+html.reduce-motion .dropdown-trigger,
+html.reduce-motion .dropdown-trigger:hover,
+html.reduce-motion .dropdown-trigger:active {
+  transition: none !important;
+  transform: none !important;
 }
 
 /* Typography Hierarchy */

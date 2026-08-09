@@ -130,6 +130,8 @@ export default function BacklogCard({ backlog }) {
                 aria-expanded={isMenuOpen}
                 aria-haspopup="true"
                 style={{
+                  border: 'none',
+                  cursor: 'pointer',
                   color: isMenuOpen ? 'var(--primary)' : 'var(--text-muted)',
                   boxShadow: (isKebabHovered || isMenuOpen) ? '0 0 6px color-mix(in srgb, var(--primary) 50%, transparent)' : 'none',
                   backgroundColor: (isKebabHovered || isMenuOpen) ? 'var(--primary-light)' : 'transparent',
@@ -169,6 +171,8 @@ export default function BacklogCard({ backlog }) {
                     }}
                     className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors focus-visible stagger-item stagger-delay-1"
                     style={{ 
+                      border: 'none',
+                      cursor: 'pointer',
                       color: 'var(--text-main)',
                       backgroundColor: hoveredItem === 'details' ? 'var(--primary-light)' : 'transparent'
                     }}
@@ -195,6 +199,8 @@ export default function BacklogCard({ backlog }) {
                     }}
                     className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors focus-visible stagger-item stagger-delay-2"
                     style={{ 
+                      border: 'none',
+                      cursor: 'pointer',
                       color: 'var(--text-main)',
                       backgroundColor: hoveredItem === 'archive' ? 'var(--primary-light)' : 'transparent'
                     }}
@@ -215,6 +221,8 @@ export default function BacklogCard({ backlog }) {
                     }}
                     className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors focus-visible stagger-item stagger-delay-4"
                     style={{ 
+                      border: 'none',
+                      cursor: 'pointer',
                       color: 'var(--danger)',
                       backgroundColor: hoveredItem === 'delete' ? 'var(--primary-light)' : 'transparent'
                     }}

@@ -18,7 +18,8 @@ export default function ConfirmDeleteModal({ isOpen, onClose, onConfirm, isDelet
           <button 
             onClick={onClose}
             disabled={isDeleting}
-            className="p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+            className="icon-btn p-1 rounded-full"
+            aria-label="Close modal"
           >
             <X size={20} />
           </button>

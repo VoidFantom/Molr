@@ -174,6 +174,7 @@ export default function SettingsPage() {
                   </div>
                   <style>{`
                     .font-btn-glow {
+                      border: none;
                       background-color: color-mix(in srgb, var(--text-muted) 5%, transparent);
                       transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
                     }
@@ -198,8 +199,7 @@ export default function SettingsPage() {
                   <div className="relative w-48" onMouseLeave={() => setIsFontDropdownOpen(false)}>
                     <button
                       onClick={() => setIsFontDropdownOpen(!isFontDropdownOpen)}
-                      className="flex items-center justify-between gap-3 w-full p-2.5 rounded-lg border focus-visible font-btn-glow"
-                      style={{ borderColor: 'transparent' }}
+                      className="flex items-center justify-between gap-3 w-full p-2.5 rounded-lg focus-visible font-btn-glow"
                       aria-expanded={isFontDropdownOpen}
                       aria-label="Select Font Size"
                     >
@@ -219,7 +219,7 @@ export default function SettingsPage() {
                           <button
                             key={opt.id}
                             className="w-full flex items-center justify-between p-3 text-left transition-colors font-medium text-sm focus-visible font-dropdown-item-hover"
-                            style={{ color: fontScale === opt.id ? 'var(--primary)' : 'var(--text-main)', backgroundColor: fontScale === opt.id ? 'var(--bg-color)' : 'transparent' }}
+                            style={{ border: 'none', cursor: 'pointer', color: fontScale === opt.id ? 'var(--primary)' : 'var(--text-main)', backgroundColor: fontScale === opt.id ? 'var(--primary-light)' : 'transparent' }}
                             onClick={() => {
                               setFontScale(opt.id);
                               setIsFontDropdownOpen(false);
@@ -336,8 +336,7 @@ export default function SettingsPage() {
                 
                 <button 
                   onClick={handleDeleteClick} 
-                  className="btn flex items-center justify-between p-3 rounded-lg transition-colors text-left font-medium w-full hover:bg-red-50 dark:hover:bg-red-900/20"
-                  style={{ color: 'var(--danger)' }}
+                  className="btn btn-danger flex items-center justify-between p-3 rounded-lg transition-colors text-left font-medium w-full"
                 >
                   <div className="flex items-center gap-3">
                     <Trash2 size={20} />
