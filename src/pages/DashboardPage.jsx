@@ -71,7 +71,7 @@ export default function DashboardPage() {
                 <div className="mt-12">
                   <button 
                     onClick={() => setShowArchived(!showArchived)}
-                    className="flex items-center gap-3 w-full group focus-visible p-2 -ml-2 rounded-lg transition-colors hover:bg-black/5 dark:hover:bg-white/5"
+                    className={`flex items-center gap-3 w-full group focus-visible p-2 -ml-2 rounded-lg kebab-button ${showArchived ? 'kebab-open' : ''}`}
                     aria-expanded={showArchived}
                     aria-controls="archived-list"
                   >

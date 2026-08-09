@@ -115,7 +115,7 @@ export default function BacklogCard({ backlog }) {
             <div className="relative" ref={menuRef}>
               <button 
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className={`p-1.5 rounded-lg transition-colors focus-visible kebab-button ${isMenuOpen ? 'bg-black/5 dark:bg-white/5 kebab-open' : 'hover:bg-black/5 dark:hover:bg-white/5'}`}
+                className={`p-1.5 rounded-lg focus-visible kebab-button ${isMenuOpen ? 'kebab-open' : ''}`}
                 aria-label="Options"
                 aria-expanded={isMenuOpen}
                 aria-haspopup="true"
@@ -143,7 +143,7 @@ export default function BacklogCard({ backlog }) {
                       setIsMenuOpen(false);
                       console.log("View Details clicked for:", backlog.id);
                     }}
-                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors hover:bg-black/5 dark:hover:bg-white/5 focus-visible stagger-item stagger-delay-1"
+                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 focus-visible stagger-item stagger-delay-1 menu-item-hover"
                     style={{ color: 'var(--text-main)' }}
                     role="menuitem"
                   >
@@ -164,7 +164,7 @@ export default function BacklogCard({ backlog }) {
                         }
                       }, 200);
                     }}
-                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors hover:bg-black/5 dark:hover:bg-white/5 focus-visible stagger-item stagger-delay-2"
+                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 focus-visible stagger-item stagger-delay-2 menu-item-hover"
                     style={{ color: 'var(--text-main)' }}
                     role="menuitem"
                   >
@@ -179,11 +179,10 @@ export default function BacklogCard({ backlog }) {
                       setIsMenuOpen(false);
                       setIsDeleteModalOpen(true);
                     }}
-                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors hover:bg-red-50 dark:hover:bg-red-900/20 focus-visible group stagger-item stagger-delay-4"
-                    style={{ color: 'var(--danger)' }}
+                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 focus-visible stagger-item stagger-delay-4 menu-item-danger group"
                     role="menuitem"
                   >
-                    <Trash2 size={16} className="transition-colors group-hover:text-red-600 dark:group-hover:text-red-400" />
+                    <Trash2 size={16} className="text-danger" />
                     Delete Backlog
                   </button>
                 </div>
