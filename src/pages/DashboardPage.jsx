@@ -95,6 +95,7 @@ export default function DashboardPage() {
             </>
           )}
         </main>
+      </div>
 
       <AddBacklogModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
