@@ -193,7 +193,7 @@ export default function SettingsPage() {
                   </div>
                 </div>
 
-                <div className="border-t border-color my-1"></div>
+                <div className="border-t my-1" style={{ borderColor: 'var(--border-color)' }}></div>
                 
                 <div className="flex items-center justify-between">
                   <div className="font-medium">
@@ -211,7 +211,7 @@ export default function SettingsPage() {
                   </button>
                 </div>
 
-                <div className="border-t border-color my-1"></div>
+                <div className="border-t my-1" style={{ borderColor: 'var(--border-color)' }}></div>
                 
                 <div className="flex items-center justify-between">
                   <div className="font-medium">

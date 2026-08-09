@@ -4,7 +4,7 @@ import { useData } from '../context/DataContext';
 import StreakBadge from '../components/StreakBadge';
 import BacklogCard from '../components/BacklogCard';
 import AddBacklogModal from '../components/AddBacklogModal';
-import { Plus, Inbox } from 'lucide-react';
+import { Plus, Inbox, Archive, ChevronDown } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import Loader from '../components/Loader';
 
@@ -68,28 +68,40 @@ export default function DashboardPage() {
               )}
 
               {archivedBacklogs.length > 0 && (
-                <div className="mt-8">
-                  <div className="flex items-center gap-4 mb-4">
-                    <h3 className="text-sm font-medium text-muted">Archived ({archivedBacklogs.length})</h3>
-                    <div className="flex-1 border-t" style={{ borderColor: 'var(--border-color)' }}></div>
-                    <button 
-                      onClick={() => setShowArchived(!showArchived)}
-                      className="text-xs font-medium focus-visible px-2 py-1 rounded-md"
-                      style={{ color: 'var(--primary)' }}
-                      aria-expanded={showArchived}
-                      aria-controls="archived-list"
-                    >
-                      {showArchived ? 'Hide' : 'Show'}
-                    </button>
-                  </div>
+                <div className="mt-12">
+                  <button 
+                    onClick={() => setShowArchived(!showArchived)}
+                    className="flex items-center gap-3 w-full group focus-visible p-2 -ml-2 rounded-lg transition-colors hover:bg-black/5 dark:hover:bg-white/5"
+                    aria-expanded={showArchived}
+                    aria-controls="archived-list"
+                  >
+                    <Archive size={20} className="text-muted group-hover:text-primary transition-colors" />
+                    <h3 className="text-sm font-semibold text-muted group-hover:text-primary transition-colors">
+                      Archived ({archivedBacklogs.length})
+                    </h3>
+                    <div className="flex-1 border-t mx-2" style={{ borderColor: 'var(--border-color)' }}></div>
+                    <ChevronDown 
+                      size={18} 
+                      className="text-muted group-hover:text-primary transition-all" 
+                      style={{ transform: showArchived ? 'rotate(180deg)' : 'rotate(0)' }} 
+                    />
+                  </button>
                   
-                  {showArchived && (
-                    <div id="archived-list" className="backlog-grid" style={{ opacity: 0.6 }}>
+                  <div 
+                    id="archived-list" 
+                    className="archived-wrapper mt-4" 
+                    style={{ 
+                      maxHeight: showArchived ? '2000px' : '0px',
+                      opacity: showArchived ? 1 : 0,
+                      pointerEvents: showArchived ? 'auto' : 'none'
+                    }}
+                  >
+                    <div className="backlog-grid">
                       {archivedBacklogs.map(backlog => (
                         <BacklogCard key={backlog.id} backlog={backlog} />
                       ))}
                     </div>
-                  )}
+                  </div>
                 </div>
               )}
             </>

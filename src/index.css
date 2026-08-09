@@ -630,10 +630,83 @@ h1, h2, h3, h4, h5, h6, .display-font {
   animation: scaleInDropdown 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-html.reduce-motion .dropdown-anim,
-html.reduce-motion * {
+html.reduce-motion *:not(.toggle-switch):not(.toggle-thumb) {
   animation-duration: 0.001s !important;
   transition-duration: 0.001s !important;
+}
+
+@keyframes slideFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stagger-item {
+  opacity: 0;
+  animation: slideFadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.stagger-delay-1 { animation-delay: 0.03s; }
+.stagger-delay-2 { animation-delay: 0.06s; }
+.stagger-delay-3 { animation-delay: 0.09s; }
+.stagger-delay-4 { animation-delay: 0.12s; }
+
+/* Card Hover */
+.backlog-card {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, filter 0.3s ease, opacity 0.3s ease;
+}
+.backlog-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Kebab Button Visibility */
+.kebab-button {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.12s ease-out, transform 0.12s ease-out, background-color 0.2s ease, color 0.2s ease !important;
+}
+
+.kebab-button:active {
+  transform: scale(0.94) !important;
+}
+
+/* Touch devices always see it */
+@media (hover: none) and (pointer: coarse) {
+  .kebab-button {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Hover-capable devices see it on hover or focus-within */
+@media (hover: hover) and (pointer: fine) {
+  .backlog-card:hover .kebab-button,
+  .backlog-card:focus-within .kebab-button,
+  .kebab-button.kebab-open {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Archived Grid */
+.archived-wrapper {
+  overflow: hidden;
+  transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.archived-card {
+  opacity: 0.6;
+  filter: grayscale(30%);
+}
+.archived-card:hover {
+  opacity: 1;
+  filter: grayscale(0%);
 }
 
 /* Toggle Switch */

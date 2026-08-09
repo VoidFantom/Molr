@@ -18,6 +18,7 @@ export default function BacklogCard({ backlog }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isExiting, setIsExiting] = useState(false);
   const menuRef = useRef(null);
 
   const subject = subjects.find(s => s.id === backlog.subjectId);
@@ -89,7 +90,15 @@ export default function BacklogCard({ backlog }) {
 
   return (
     <>
-      <div className="card" style={{ position: 'relative' }}>
+      <div 
+        className={`card backlog-card ${backlog.archived ? 'archived-card' : ''}`} 
+        style={{ 
+          position: 'relative',
+          opacity: isExiting ? 0 : '',
+          transform: isExiting ? 'scale(0.95)' : '',
+          transition: 'opacity 0.2s ease, transform 0.2s ease, filter 0.3s ease, box-shadow 0.2s ease'
+        }}
+      >
         <div className="flex justify-between items-start mb-4">
           <div>
             <div className="text-xs font-semibold text-primary mb-1">
@@ -106,19 +115,21 @@ export default function BacklogCard({ backlog }) {
             <div className="relative" ref={menuRef}>
               <button 
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className={`p-1.5 rounded-lg transition-colors focus-visible ${isMenuOpen ? 'bg-black/5 dark:bg-white/5 text-primary' : 'hover:bg-black/5 dark:hover:bg-white/5 text-muted'}`}
+                className={`p-1.5 rounded-lg transition-colors focus-visible kebab-button ${isMenuOpen ? 'bg-black/5 dark:bg-white/5 kebab-open' : 'hover:bg-black/5 dark:hover:bg-white/5'}`}
                 aria-label="Options"
                 aria-expanded={isMenuOpen}
                 aria-haspopup="true"
-                style={{ 
-                  transform: 'scale(1)',
-                  transition: 'transform 0.15s ease, background-color 0.2s ease, color 0.2s ease'
+                style={{
+                  color: isMenuOpen ? 'var(--primary)' : 'var(--text-muted)'
                 }}
-                onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.94)'}
-                onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
               >
-                <MoreVertical size={20} />
+                <MoreVertical 
+                  size={20} 
+                  style={{ 
+                    transform: isMenuOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+                    transition: 'transform 0.15s cubic-bezier(0.4, 0, 0.2, 1)' 
+                  }} 
+                />
               </button>
               
               {isMenuOpen && (
@@ -132,7 +143,7 @@ export default function BacklogCard({ backlog }) {
                       setIsMenuOpen(false);
                       console.log("View Details clicked for:", backlog.id);
                     }}
-                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors hover:bg-black/5 dark:hover:bg-white/5 focus-visible"
+                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors hover:bg-black/5 dark:hover:bg-white/5 focus-visible stagger-item stagger-delay-1"
                     style={{ color: 'var(--text-main)' }}
                     role="menuitem"
                   >
@@ -141,15 +152,19 @@ export default function BacklogCard({ backlog }) {
                   </button>
                   
                   <button
-                    onClick={async () => {
+                    onClick={() => {
                       setIsMenuOpen(false);
-                      try {
-                        await archiveBacklog(currentUser.uid, backlog.id, !backlog.archived);
-                      } catch (e) {
-                        console.error("Error toggling archive status", e);
-                      }
+                      setIsExiting(true);
+                      setTimeout(async () => {
+                        try {
+                          await archiveBacklog(currentUser.uid, backlog.id, !backlog.archived);
+                        } catch (e) {
+                          console.error("Error toggling archive status", e);
+                          setIsExiting(false);
+                        }
+                      }, 200);
                     }}
-                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors hover:bg-black/5 dark:hover:bg-white/5 focus-visible"
+                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors hover:bg-black/5 dark:hover:bg-white/5 focus-visible stagger-item stagger-delay-2"
                     style={{ color: 'var(--text-main)' }}
                     role="menuitem"
                   >
@@ -157,18 +172,18 @@ export default function BacklogCard({ backlog }) {
                     {backlog.archived ? "Unarchive Backlog" : "Archive Backlog"}
                   </button>
 
-                  <div className="border-t my-1 mx-2" style={{ borderColor: 'var(--border-color)' }}></div>
+                  <div className="border-t my-1 mx-2 stagger-item stagger-delay-3" style={{ borderColor: 'var(--border-color)' }}></div>
                   
                   <button
                     onClick={() => {
                       setIsMenuOpen(false);
                       setIsDeleteModalOpen(true);
                     }}
-                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors hover:bg-red-50 dark:hover:bg-red-900/20 focus-visible"
+                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors hover:bg-red-50 dark:hover:bg-red-900/20 focus-visible group stagger-item stagger-delay-4"
                     style={{ color: 'var(--danger)' }}
                     role="menuitem"
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={16} className="transition-colors group-hover:text-red-600 dark:group-hover:text-red-400" />
                     Delete Backlog
                   </button>
                 </div>
