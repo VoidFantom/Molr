@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { BookOpen, CheckCircle, MoreVertical, Trash2, Eye, Archive } from 'lucide-react';
+import { BookOpen, CheckCircle, MoreVertical, Trash2, Eye, Archive, FileText } from 'lucide-react';
 import { db } from '../firebase';
 import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
 import { toggleDynamicTaskCompletion, deleteBacklog, archiveBacklog } from '../services/db';
@@ -8,6 +8,7 @@ import { useData } from '../context/DataContext';
 import TaskItem from './TaskItem';
 import { getCurrentTask } from '../utils/tasks';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
+import PdfViewer from './PdfViewer';
 
 export default function BacklogCard({ backlog }) {
   const { currentUser } = useAuth();
@@ -19,6 +20,7 @@ export default function BacklogCard({ backlog }) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
+  const [isPdfOpen, setIsPdfOpen] = useState(false);
   
   const [isKebabHovered, setIsKebabHovered] = useState(false);
   const [isKebabActive, setIsKebabActive] = useState(false);
@@ -112,6 +114,18 @@ export default function BacklogCard({ backlog }) {
           </div>
           
           <div className="flex items-center gap-2">
+            {chapter?.pdfKey && (
+              <button 
+                type="button"
+                onClick={() => setIsPdfOpen(true)}
+                className="btn btn-outline text-xs flex items-center gap-1.5 font-medium"
+                style={{ padding: '0.375rem 0.625rem', borderRadius: '0.5rem' }}
+                title="View Cheat Sheet"
+              >
+                <FileText size={14} className="text-primary" />
+                <span>View Cheat Sheet</span>
+              </button>
+            )}
             <div className="p-2 rounded-lg" style={{ backgroundColor: 'var(--primary-light)', color: 'var(--primary)' }}>
               <BookOpen size={20} />
             </div>
@@ -299,6 +313,14 @@ export default function BacklogCard({ backlog }) {
         title="Delete Backlog"
         message="Delete this backlog? This will remove all its tasks and progress. This can't be undone."
       />
+
+      {isPdfOpen && chapter?.pdfKey && (
+        <PdfViewer 
+          pdfKey={chapter.pdfKey} 
+          title={`Cheat Sheet — Chapter ${chapter.chapterNumber}: ${chapter.name}`}
+          onClose={() => setIsPdfOpen(false)}
+        />
+      )}
     </>
   );
 }

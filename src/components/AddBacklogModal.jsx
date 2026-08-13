@@ -59,6 +59,7 @@ export default function AddBacklogModal({ isOpen, onClose }) {
           title: `Day ${i + 1} of ${chapterName}`,
           completed: false,
           chapterId: chapterId,
+          openedCheatSheetAt: null,
         });
       }
       
@@ -182,7 +183,6 @@ export default function AddBacklogModal({ isOpen, onClose }) {
                     className="input"
                     value={targetDate} 
                     min={minDateStr}
-                    max={maxDateStr}
                     onChange={e => setTargetDate(e.target.value)}
                     required
                   />

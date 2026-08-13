@@ -24,7 +24,7 @@ export function DataProvider({ children }) {
     console.log("[DataContext] loading static data from curriculum.js...");
     const subjs = SUBJECTS.map(s => ({ id: s.id, name: s.name }));
     const chaps = SUBJECTS.flatMap(s => 
-      s.chapters.map(c => ({ id: c.id, name: c.name, subjectId: s.id, tasks: c.tasks || [] }))
+      s.chapters.map(c => ({ id: c.id, name: c.name, chapterNumber: c.chapterNumber, pdfKey: c.pdfKey, subjectId: s.id, tasks: c.tasks || [] }))
     );
     
     setSubjects(subjs);
